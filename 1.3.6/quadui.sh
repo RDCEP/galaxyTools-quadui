@@ -104,6 +104,9 @@ countW=0
 countC=0
 countS=0
 count=0
+
+echo "WTH Data package: $wthDataPackage"
+
 #if [ "$inputType" == "zip" ]
 #then
   while read line
@@ -178,15 +181,15 @@ count=0
 if [ $supDataFlg == true ]
 then
   cd tmp
-  zip -r -q ../survey.zip *
-  cd ..
+  zip -r -q $THISDIR/survey.zip *
+  cd $THISDIR
 else
   if [ "$inputType" == "zip" ]
   then
-    cp -f $surveyData $PWD/survey.zip
+    cp -f $surveyData $THISDIR/survey.zip
   else
-    cp -f $surveyData $PWD/survey.aceb
-    cp -f $surveyData $PWD/aceb_output/survey.aceb
+    cp -f $surveyData $THISDIR/survey.aceb
+    cp -f $surveyData $THISDIR/aceb_output/survey.aceb
   fi
 fi
 
@@ -195,6 +198,7 @@ INSTALL_DIR=/mnt/galaxyTools/quadui/1.3.6
 quadui=quadui-1.3.7-faceit.jar
 ln -sf $INSTALL_DIR/C3MP_Sensitivity.csv
 ln -sf $INSTALL_DIR/CTWN_Sensitivity.csv
+QUADUI_OUTPUT=$THISDIR/output
 batch="N/A"
 case $runMode in
   c3mp) batch=C3MP_Sensitivity.csv ;;
@@ -205,7 +209,7 @@ case $runMode in
       batch=batch.csv
        ;;
 esac
-ln -sf $INSTALL_DIR/$quadui
+ln -sf $INSTALL_DIR/$quadui 
 if [ "$batch" == "N/A" ]
 then
   if [ "$inputType" == "zip" ]
@@ -215,11 +219,11 @@ then
       cp -f $fieldDome $PWD/overlay.zip
       cp -f $seasonalDome $PWD/strategy.zip
       cp -f $linkage $PWD/linkage.csv
-      java -jar $quadui -cli -clean -s -J "survey.zip" "linkage.csv" "overlay.zip" "strategy.zip" $PWD/output
+      java -jar $quadui -cli -clean -s -J "survey.zip" "linkage.csv" "overlay.zip" "strategy.zip" $QUADUI_OUTPUT
     else
       cp -f $fieldDome $PWD/overlay.zip
       cp -f $linkage $PWD/linkage.csv
-      java -jar $quadui -cli -clean -f -J "survey.zip" "linkage.csv" "overlay.zip" $PWD/output
+      java -jar $quadui -cli -clean -f -J "survey.zip" "linkage.csv" "overlay.zip" $QUADUI_OUTPUT
     fi
   else
     if [ "$domeType" == "seasonal" ]
@@ -230,9 +234,9 @@ then
       cp -f $linkage $PWD/aceb_output/linkage.alnk
       if [ $supDataFlg == true ]
       then
-        java -jar $quadui -cli -clean -s -J "survey.zip" "linkage.alnk" "1.dome" "1.dome" $PWD/output
+        java -jar $quadui -cli -clean -s -J "survey.zip" "linkage.alnk" "1.dome" "1.dome" $QUADUI_OUTPUT
       else
-        java -jar $quadui -cli -clean -s -J "survey.aceb" "linkage.alnk" "1.dome" "1.dome" $PWD/output
+        java -jar $quadui -cli -clean -s -J "survey.aceb" "linkage.alnk" "1.dome" "1.dome" $QUADUI_OUTPUT
       fi
     else
       cp -f $surveyData $PWD/survey.aceb
@@ -242,9 +246,9 @@ then
       cp -f $linkage $PWD/aceb_output/linkage.alnk
       if [ $supDataFlg == true ]
       then
-        java -jar $quadui -cli -clean -f -J "survey.zip" "linkage.alnk" "1.dome" $PWD/output
+        java -jar $quadui -cli -clean -f -J "survey.zip" "linkage.alnk" "1.dome" $QUADUI_OUTPUT
       else
-        java -jar $quadui -cli -clean -f -J "survey.aceb" "linkage.alnk" "1.dome" $PWD/output
+        java -jar $quadui -cli -clean -f -J "survey.aceb" "linkage.alnk" "1.dome" $QUADUI_OUTPUT
       fi
     fi
   fi
@@ -256,11 +260,12 @@ else
       cp -f $fieldDome $PWD/overlay.zip
       cp -f $seasonalDome $PWD/strategy.zip
       cp -f $linkage $PWD/linkage.csv
-      java -jar $quadui -cli -clean -s -batch -J "survey.zip" "linkage.csv" "overlay.zip" "strategy.zip" "$batch" $PWD/output
+      java -jar $quadui -cli -clean -s -batch -J "survey.zip" "linkage.csv" "overlay.zip" "strategy.zip" "$batch" $QUADUI_OUTPUT
+      echo "-----------------------"
     else
       cp -f $fieldDome $PWD/overlay.zip
       cp -f $linkage $PWD/linkage.csv
-    java -jar $quadui -cli -clean -f -batch -J "survey.zip" "linkage.csv" "overlay.zip" "$batch" $PWD/output
+    java -jar $quadui -cli -clean -f -batch -J "survey.zip" "linkage.csv" "overlay.zip" "$batch" $QUADUI_OUTPUT
     fi
   else
     if [ "$domeType" == "seasonal" ]
@@ -271,9 +276,9 @@ else
       cp -f $linkage $PWD/aceb_output/linkage.alnk
       if [ $supDataFlg == true ]
       then
-        java -jar $quadui -cli -clean -s -batch -J "survey.zip" "linkage.alnk" "1.dome" "1.dome" "$batch" $PWD/output
+        java -jar $quadui -cli -clean -s -batch -J "survey.zip" "linkage.alnk" "1.dome" "1.dome" "$batch" $QUADUI_OUTPUT
       else
-        java -jar $quadui -cli -clean -s -batch -J "survey.aceb" "linkage.alnk" "1.dome" "1.dome" "$batch" $PWD/output
+        java -jar $quadui -cli -clean -s -batch -J "survey.aceb" "linkage.alnk" "1.dome" "1.dome" "$batch" $QUADUI_OUTPUT
       fi
     else
       cp -f $surveyData $PWD/survey.aceb
@@ -283,22 +288,25 @@ else
       cp -f $linkage $PWD/aceb_output/linkage.alnk
       if [ $supDataFlg == true ]
       then
-        java -jar $quadui -cli -clean -f -batch -J "survey.zip" "linkage.alnk" "1.dome" "$batch" $PWD/output
+        java -jar $quadui -cli -clean -f -batch -J "survey.zip" "linkage.alnk" "1.dome" "$batch" $QUADUI_OUTPUT
       else
-        java -jar $quadui -cli -clean -f -batch -J "survey.aceb" "linkage.alnk" "1.dome" "$batch" $PWD/output
+        java -jar $quadui -cli -clean -f -batch -J "survey.aceb" "linkage.alnk" "1.dome" "$batch" $QUADUI_OUTPUT
       fi
     fi
   fi
 fi
 
-rm -f $quadui
-cd output
+if [ "$(ls -A $QUADUI_OUTPUT)" == "" ]; then
+     echo "No QuadUI output in $QUADUI_OUTPUT"
+     exit -1
+fi
+cd $QUADUI_OUTPUT
 for file in *.aceb; do
 {
   if [ "$file" != "*.aceb" ]
   then
     filename="${file%.*}"
-    cp $filename.aceb ../aceb_output/.
+    cp $filename.aceb $THISDIR/aceb_output/.
   fi
 }
 done
@@ -307,7 +315,7 @@ for file in *.alnk; do
   if [ "$file" != "*.alnk" ]
   then
     filename="${file%.*}"
-    cp $filename.alnk ../aceb_output/.
+    cp $filename.alnk $THISDIR/aceb_output/.
   fi
 }
 done
@@ -316,13 +324,13 @@ for file in *.dome; do
   if [ "$file" != "*.dome" ]
   then
     filename="${file%.*}"
-    cp $filename.dome ../aceb_output/.
+    cp $filename.dome $THISDIR/aceb_output/.
   fi
 }
 done
 if [ "$runMode" == "multiGCM" ]
 then
-  mkdir ../outputJsons
+  mkdir $THISDIR/outputJsons
   for dir in batch-*/; do
   {
     cd $dir
@@ -331,15 +339,15 @@ then
     for file in *.json; do
     {
       filename="${file%.*}"
-      cp $filename.json ../../outputJsons/$batchId.json
+      cp $filename.json $THISDIR/outputJsons/$batchId.json
     }
     done
     cd ..
   }
   done
-  cd ..
-  cd outputJsons
-  zip -r -q ../outputJson.zip * 
+  
+  cd $THISDIR/outputJsons
+  zip -r -q $THISDIR/outputJson.zip * 
   cd ..
   cp outputJson.zip $outputJson
 else
@@ -387,11 +395,11 @@ then
         fi
       done
       cd cul
-      zip -r -q ../../retCul.zip *
-      cd ..
-      cd ..
+      zip -r -q $THISDIR/retCul.zip *
+      
+      cd $THISDIR
       cp retCul.zip $outputCul
-      cp retCul.zip ./aceb_output/Cultivar.zip
+      cp retCul.zip $THISDIR/aceb_output/Cultivar.zip
     fi
   else
     echo inputType: $inputType
@@ -403,9 +411,9 @@ else
 fi
 
 # Handling ACEB, ALNK and DOME files
-cd aceb_output
-zip -r -q ../aceb_output.zip *
-cd ..
+cd $THISDIR/aceb_output
+zip -r -q $THISDIR/aceb_output.zip *
+cd $THISDIR
 cp aceb_output.zip $harmonizedDataPackage
 
 echo inputType: $inputType
