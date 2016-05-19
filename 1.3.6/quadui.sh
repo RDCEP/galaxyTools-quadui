@@ -27,6 +27,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
+#echo "THISDIR:$THISDIR DIR:$DIR"
+
 # Save a copy of a command line for fast debug
 cat > `basename $0`.cmd << EOF
 source $DIR/env.sh
@@ -219,11 +221,11 @@ then
       cp -f $fieldDome $PWD/overlay.zip
       cp -f $seasonalDome $PWD/strategy.zip
       cp -f $linkage $PWD/linkage.csv
-      java -jar $quadui -cli -clean -s -J "survey.zip" "linkage.csv" "overlay.zip" "strategy.zip" $QUADUI_OUTPUT
+      java -jar $quadui -cli -clean -s -J "survey.zip" "linkage.csv" "overlay.zip" "strategy.zip" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
     else
       cp -f $fieldDome $PWD/overlay.zip
       cp -f $linkage $PWD/linkage.csv
-      java -jar $quadui -cli -clean -f -J "survey.zip" "linkage.csv" "overlay.zip" $QUADUI_OUTPUT
+      java -jar $quadui -cli -clean -f -J "survey.zip" "linkage.csv" "overlay.zip" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
     fi
   else
     if [ "$domeType" == "seasonal" ]
@@ -234,9 +236,9 @@ then
       cp -f $linkage $PWD/aceb_output/linkage.alnk
       if [ $supDataFlg == true ]
       then
-        java -jar $quadui -cli -clean -s -J "survey.zip" "linkage.alnk" "1.dome" "1.dome" $QUADUI_OUTPUT
+        java -jar $quadui -cli -clean -s -J "survey.zip" "linkage.alnk" "1.dome" "1.dome" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
       else
-        java -jar $quadui -cli -clean -s -J "survey.aceb" "linkage.alnk" "1.dome" "1.dome" $QUADUI_OUTPUT
+        java -jar $quadui -cli -clean -s -J "survey.aceb" "linkage.alnk" "1.dome" "1.dome" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
       fi
     else
       cp -f $surveyData $PWD/survey.aceb
@@ -246,9 +248,9 @@ then
       cp -f $linkage $PWD/aceb_output/linkage.alnk
       if [ $supDataFlg == true ]
       then
-        java -jar $quadui -cli -clean -f -J "survey.zip" "linkage.alnk" "1.dome" $QUADUI_OUTPUT
+        java -jar $quadui -cli -clean -f -J "survey.zip" "linkage.alnk" "1.dome" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
       else
-        java -jar $quadui -cli -clean -f -J "survey.aceb" "linkage.alnk" "1.dome" $QUADUI_OUTPUT
+        java -jar $quadui -cli -clean -f -J "survey.aceb" "linkage.alnk" "1.dome" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
       fi
     fi
   fi
@@ -260,12 +262,12 @@ else
       cp -f $fieldDome $PWD/overlay.zip
       cp -f $seasonalDome $PWD/strategy.zip
       cp -f $linkage $PWD/linkage.csv
-      java -jar $quadui -cli -clean -s -batch -J "survey.zip" "linkage.csv" "overlay.zip" "strategy.zip" "$batch" $QUADUI_OUTPUT
+      java -jar $quadui -cli -clean -s -batch -J "survey.zip" "linkage.csv" "overlay.zip" "strategy.zip" "$batch" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
       echo "-----------------------"
     else
       cp -f $fieldDome $PWD/overlay.zip
       cp -f $linkage $PWD/linkage.csv
-    java -jar $quadui -cli -clean -f -batch -J "survey.zip" "linkage.csv" "overlay.zip" "$batch" $QUADUI_OUTPUT
+    java -jar $quadui -cli -clean -f -batch -J "survey.zip" "linkage.csv" "overlay.zip" "$batch" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
     fi
   else
     if [ "$domeType" == "seasonal" ]
@@ -276,9 +278,9 @@ else
       cp -f $linkage $PWD/aceb_output/linkage.alnk
       if [ $supDataFlg == true ]
       then
-        java -jar $quadui -cli -clean -s -batch -J "survey.zip" "linkage.alnk" "1.dome" "1.dome" "$batch" $QUADUI_OUTPUT
+        java -jar $quadui -cli -clean -s -batch -J "survey.zip" "linkage.alnk" "1.dome" "1.dome" "$batch" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
       else
-        java -jar $quadui -cli -clean -s -batch -J "survey.aceb" "linkage.alnk" "1.dome" "1.dome" "$batch" $QUADUI_OUTPUT
+        java -jar $quadui -cli -clean -s -batch -J "survey.aceb" "linkage.alnk" "1.dome" "1.dome" "$batch" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
       fi
     else
       cp -f $surveyData $PWD/survey.aceb
@@ -288,13 +290,17 @@ else
       cp -f $linkage $PWD/aceb_output/linkage.alnk
       if [ $supDataFlg == true ]
       then
-        java -jar $quadui -cli -clean -f -batch -J "survey.zip" "linkage.alnk" "1.dome" "$batch" $QUADUI_OUTPUT
+        java -jar $quadui -cli -clean -f -batch -J "survey.zip" "linkage.alnk" "1.dome" "$batch" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
       else
-        java -jar $quadui -cli -clean -f -batch -J "survey.aceb" "linkage.alnk" "1.dome" "$batch" $QUADUI_OUTPUT
+        java -jar $quadui -cli -clean -f -batch -J "survey.aceb" "linkage.alnk" "1.dome" "$batch" $QUADUI_OUTPUT 2>&1 1>$THISDIR/quadui.output
       fi
     fi
   fi
 fi
+
+echo "QuadUI output"
+cat $THISDIR/quadui.output
+echo "-------------"
 
 if [ "$(ls -A $QUADUI_OUTPUT)" == "" ]; then
      echo "No QuadUI output in $QUADUI_OUTPUT"
@@ -342,13 +348,13 @@ then
       cp $filename.json $THISDIR/outputJsons/$batchId.json
     }
     done
-    cd ..
+    cd $QUADUI_OUTPUT #..
   }
   done
   
   cd $THISDIR/outputJsons
   zip -r -q $THISDIR/outputJson.zip * 
-  cd ..
+  cd $THISDIR #..
   cp outputJson.zip $outputJson
 else
   case $runMode in
@@ -361,12 +367,15 @@ else
     cp $filename.json $outputJson
   }
   done
-  cd ..
-  if [ "$runMode" != "singleGCM" ]
-  then
-    cd ..
-  fi
+  #cd ..
+  #if [ "$runMode" != "singleGCM" ]
+  #then
+  #  cd ..
+  #fi
 fi
+
+# Back in the scratch root
+cd $THISDIR
 
 # Handling cultivar files
 if [ "$culSource" == "customized" ]
